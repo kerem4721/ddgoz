@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Gözlük Koleksiyonu</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">
+            <h1>PREMIUM GÖZLÜK</h1>
+            <p>Lüks Görüş, Zarif Tasarım</p>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Gözlük ara...">
+            <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="gallery" id="glassesGallery">
+            <!-- Gözlük ürünleri JavaScript ile eklenecek -->
+        </div>
+    </div>
+
+    <!-- Modal görüntüleme -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <div class="modal-content">
+            <div class="modal-navigation">
+                <button class="nav-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+                <div class="modal-image-container">
+                    <img class="modal-image" id="modalImage">
+                    <div class="product-details">
+                        <h3 id="modalTitle">Premium Gözlük</h3>
+                        <p id="modalSrNo">SR No: </p>
+                        <a id="whatsappOrder" class="whatsapp-btn" target="_blank">
+                            <i class="fab fa-whatsapp"></i> WhatsApp'tan Sipariş Ver
+                        </a>
+                    </div>
+                </div>
+                <button class="nav-btn next-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Premium Gözlük Koleksiyonu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const gallery = document.getElementById('glassesGallery');
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalSrNo = document.getElementById('modalSrNo');
+            const whatsappBtn = document.getElementById('whatsappOrder');
+            const closeBtn = document.querySelector('.close');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const searchInput = document.getElementById('searchInput');
+            
+            let currentIndex = 0;
+            const totalItems = 100;
+
+            // Gözlük ürünlerini oluştur
+            for (let i = 1; i <= totalItems; i++) {
+                const srNo = i.toString().padStart(2, '0');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'gallery-item';
+                itemDiv.setAttribute('data-index', i - 1);
+                itemDiv.setAttribute('data-srno', srNo);
+                
+                const img = document.createElement('img');
+                img.src = `./${srNo}.png`;
+                img.alt = `Premium Gözlük ${srNo}`;
+                img.onerror = function() {
+                    this.src = 'https://via.placeholder.com/300x200?text=Görsel+Yükleniyor';
+                };
+                
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'item-info';
+                
+                const title = document.createElement('h3');
+                title.textContent = `Premium Gözlük ${srNo}`;
+                
+                const srNoText = document.createElement('p');
+                srNoText.textContent = `SR No: ${srNo}`;
+                
+                const orderBtn = document.createElement('a');
+                orderBtn.className = 'whatsapp-btn';
+                orderBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Sipariş Ver';
+                orderBtn.href = `https://wa.me/905425969558?text=SR%20No:%20${srNo}%20gözlüğü%20hakkında%20bilgi%20almak%20istiyorum.`;
+                orderBtn.target = '_blank';
+                
+                infoDiv.appendChild(title);
+                infoDiv.appendChild(srNoText);
+                infoDiv.appendChild(orderBtn);
+                
+                itemDiv.appendChild(img);
+                itemDiv.appendChild(infoDiv);
+                gallery.appendChild(itemDiv);
+                
+                // Resme tıklama olayı
+                itemDiv.addEventListener('click', function() {
+                    openModal(parseInt(this.getAttribute('data-index')));
+                });
+            }
+            
+            // Modal'ı aç
+            function openModal(index) {
+                currentIndex = index;
+                updateModal();
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // Modal'ı güncelle
+            function updateModal() {
+                const srNo = (currentIndex + 1).toString().padStart(2, '0');
+                modalImg.src = `./${srNo}.png`;
+                modalTitle.textContent = `Premium Gözlük ${srNo}`;
+                modalSrNo.textContent = `SR No: ${srNo}`;
+                whatsappBtn.href = `https://wa.me/905425969558?text=SR%20No:%20${srNo}%20gözlüğü%20hakkında%20bilgi%20almak%20istiyorum.`;
+            }
+            
+            // Modal'ı kapat
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Dışarı tıklayınca kapat
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+            
+            // Önceki resme git
+            prevBtn.onclick = function(e) {
+                e.stopPropagation();
+                currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+                updateModal();
+            }
+            
+            // Sonraki resme git
+            nextBtn.onclick = function(e) {
+                e.stopPropagation();
+                currentIndex = (currentIndex + 1) % totalItems;
+                updateModal();
+            }
+            
+            // Klavye ile gezinme
+            document.addEventListener('keydown', function(e) {
+                if (modal.style.display === 'flex') {
+                    if (e.key === 'ArrowLeft') {
+                        prevBtn.click();
+                    } else if (e.key === 'ArrowRight') {
+                        nextBtn.click();
+                    } else if (e.key === 'Escape') {
+                        closeBtn.click();
+                    }
+                }
+            });
+            
+            // Arama işlevi
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const items = gallery.querySelectorAll('.gallery-item');
+                
+                items.forEach(function(item) {
+                    const srNo = item.getAttribute('data-srno');
+                    const title = item.querySelector('h3').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || srNo.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
